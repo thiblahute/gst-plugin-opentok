@@ -1,7 +1,10 @@
 [package]
 name = "gst-plugin-opentok"
 version = "0.1.0"
-authors = ["Fernando Jimenez Moreno <fjimenez@igalia.com>", "Philippe Normand <philn@igalia.com>"]
+authors = [
+  "Fernando Jimenez Moreno <fjimenez@igalia.com>",
+  "Philippe Normand <philn@igalia.com>",
+]
 edition = "2021"
 description = "GStreamer plugin to allow publishing and subscribing to OpenTok audio and video streams"
 repository = "https://github.com/opentok-rust/gst-plugin-opentok"
@@ -13,11 +16,19 @@ readme = "README.md"
 [package.metadata.deb]
 name = "gst-plugin-opentok"
 assets = [
-  ["target/release/deps/libgstopentok.so", "/usr/lib/x86_64-linux-gnu/gstreamer-1.0/", "644"],
-  ["target/release/gst-opentok-helper", "/usr/bin/", "755"],
+  [
+    "target/release/deps/libgstopentok.so",
+    "/usr/lib/x86_64-linux-gnu/gstreamer-1.0/",
+    "644",
+  ],
+  [
+    "target/release/gst-opentok-helper",
+    "/usr/bin/",
+    "755",
+  ],
 ]
 depends = "$auto,libopentok,libc++1-7"
-systemd-units = { }
+systemd-units = {}
 
 [lib]
 name = "gstopentok"
@@ -84,3 +95,8 @@ futures = "0.3.17"
 version = "1.5.0"
 default-features = false
 features = ["user-hooks"]
+
+
+[patch."https://github.com/opentok-rust/opentok-rs"]
+opentok = { path = "/var/home/thiblahute/devel/clients/televic/opentok-rs/opentok" }
+opentok-rs-sys = { path = "/var/home/thiblahute/devel/clients/televic/opentok-rs/opentok-sys" }

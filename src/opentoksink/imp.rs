@@ -18,7 +18,7 @@ use gst::prelude::*;
 use gst::subclass::prelude::*;
 use once_cell::sync::Lazy;
 use opentok::audio_device::{AudioDevice, AudioSampleData};
-use opentok::publisher::{Publisher, PublisherCallbacks};
+use opentok::publisher::{Publisher, PublisherCallbacks, PublisherSettings};
 use opentok::session::{Session, SessionCallbacks};
 use opentok::video_capturer::{VideoCapturer, VideoCapturerCallbacks, VideoCapturerSettings};
 use opentok::video_frame::VideoFrame;
@@ -291,8 +291,22 @@ impl OpenTokSink {
 
         gst::debug!(CAT, imp: self, "Initializing publisher");
 
-        // Even if we are only publishing audio for now, we need to add a video
-        // capturer, in case a video pad is requested at some point.
+        if self.video_sink.lock().unwrap().is_none() {
+            gst::error!(CAT, imp: self, "No video sink, not publishing video");
+
+            let settings = PublisherSettings::new();
+            settings.set_name("opentoksink").unwrap();
+            settings.set_video_track(false).unwrap();
+            let publisher =
+                Publisher::new_with_settings(PublisherCallbacks::builder().build(), settings);
+
+            *self.publisher.lock().unwrap() = Some(publisher);
+
+            gst::error!(CAT, "Publisher created");
+
+            return;
+        }
+
         let credentials = &self.credentials;
         let published_stream_id = &self.published_stream_id;
         let video_sink = &self.video_sink;
